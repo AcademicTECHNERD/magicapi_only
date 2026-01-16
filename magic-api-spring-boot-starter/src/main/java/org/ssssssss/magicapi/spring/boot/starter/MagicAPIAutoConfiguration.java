@@ -19,6 +19,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -63,6 +64,8 @@ import org.ssssssss.magicapi.jsr223.LanguageProvider;
 import org.ssssssss.magicapi.modules.DynamicModule;
 import org.ssssssss.magicapi.utils.Mapping;
 import org.ssssssss.magicapi.utils.WebUtils;
+import org.ssssssss.magicapi.utils.XxlJobAdminClient;
+import org.ssssssss.magicapi.utils.XxlJobAdminProperties;
 import org.ssssssss.script.MagicResourceLoader;
 import org.ssssssss.script.MagicScript;
 import org.ssssssss.script.MagicScriptEngine;
@@ -136,7 +139,21 @@ public class MagicAPIAutoConfiguration implements WebMvcConfigurer, WebSocketCon
 
 	private boolean registerWebsocket = false;
 
-	@Autowired
+    @Bean
+    @ConditionalOnMissingBean
+    public XxlJobAdminClient xxlJobAdminClient(XxlJobAdminProperties properties,
+                                               RestTemplate restTemplate) {
+        return new XxlJobAdminClient(properties, restTemplate);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+
+    @Autowired
 	@Lazy
 	private RequestMappingHandlerMapping requestMappingHandlerMapping;
 
@@ -340,7 +357,12 @@ public class MagicAPIAutoConfiguration implements WebMvcConfigurer, WebSocketCon
 		if (base != null) {
 			configuration.setEnableWeb(true);
 			mapping.registerController(magicWorkbenchController)
-					.registerController(new MagicResourceController(configuration))
+                    .registerController(
+                            new MagicResourceController(
+                                    configuration,
+                                    applicationContext.getBean(XxlJobAdminClient.class)
+                            )
+                    )
 					.registerController(new MagicDataSourceController(configuration))
 					.registerController(new MagicBackupController(configuration));
 			pluginConfigurations.forEach(it -> it.controllerRegister().register(mapping, configuration));

@@ -19,7 +19,8 @@ public class MagicTaskController extends MagicController implements MagicExcepti
 
 	public MagicTaskController(MagicConfiguration configuration) {
 		super(configuration);
-	}
+
+    }
 
 	@PostMapping("/task/execute")
 	@ResponseBody
@@ -27,6 +28,7 @@ public class MagicTaskController extends MagicController implements MagicExcepti
 		MagicEntity entity = MagicConfiguration.getMagicResourceService().file(id);
 		notNull(entity, FILE_NOT_FOUND);
 		String script = entity.getScript();
+        //调用调度中心的执行
 		DebugRequest debugRequest = DebugRequest.create(request);
 		MagicLoggerContext.SESSION.set(debugRequest.getRequestedClientId());
 		String sessionAndScriptId = debugRequest.getRequestedClientId() + debugRequest.getRequestedScriptId();

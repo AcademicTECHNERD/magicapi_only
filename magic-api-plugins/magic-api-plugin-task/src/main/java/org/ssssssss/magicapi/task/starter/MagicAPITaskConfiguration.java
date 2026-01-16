@@ -13,16 +13,21 @@ import org.ssssssss.magicapi.task.service.TaskMagicDynamicRegistry;
 import org.ssssssss.magicapi.task.web.MagicTaskController;
 
 @Configuration
-@EnableConfigurationProperties(MagicTaskConfig.class)
+//@EnableConfigurationProperties(MagicTaskConfig.class)
+@EnableConfigurationProperties({MagicTaskConfig.class})
 public class MagicAPITaskConfiguration implements MagicPluginConfiguration {
 
 	private final MagicTaskConfig config;
 
-	public MagicAPITaskConfiguration(MagicTaskConfig config) {
-		this.config = config;
-	}
+    public MagicAPITaskConfiguration(MagicTaskConfig config) {
+        this.config = config;
+    }
 
-	@Bean
+//	public MagicAPITaskConfiguration(MagicTaskConfig config) {
+//		this.config = config;
+//	}
+
+    @Bean
 	@ConditionalOnMissingBean
 	public TaskInfoMagicResourceStorage taskInfoMagicResourceStorage() {
 		return new TaskInfoMagicResourceStorage();
@@ -51,8 +56,10 @@ public class MagicAPITaskConfiguration implements MagicPluginConfiguration {
 		return new Plugin("定时任务", "MagicTask", "magic-task.1.0.0.iife.js");
 	}
 
-	@Override
-	public MagicControllerRegister controllerRegister() {
-		return (mapping, configuration) -> mapping.registerController(new MagicTaskController(configuration));
-	}
+    @Override
+    public MagicControllerRegister controllerRegister() {
+        return (mapping, configuration) -> {
+            mapping.registerController(new MagicTaskController(configuration));
+        };
+    }
 }

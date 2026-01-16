@@ -1,0 +1,34 @@
+server:
+  port: 10003
+
+magic-api:
+  #??web????
+  web: /magic/web
+  resource:
+    #???????????classpath?????????
+    #mac???????????
+    #???????????????????????????Redis???????
+    location: D:/data/magic-api
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/magic-api-test?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: 09230542
+
+xxl:
+  job:
+    admin:
+      addresses: http://127.0.0.1:2026/xxl-job-admin
+      accessToken: default_token
+      timeout: 3 # ?
+    executor:
+      enabled: true
+      appname: xxl-job-executor-sample
+      address: ""
+      ip: ""
+      port: 2025
+      logpath: /data/applogs/xxl-job/jobhandler
+      logretentiondays: 30
+      excludedpackage: ""
